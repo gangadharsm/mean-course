@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { PostsService } from '../../../services/posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../../../models/post';
+import { mimeType } from '../../../custom-validators/mine-type.validator'
 @Component({
   selector: 'app-post-create',
   templateUrl: './post-create.component.html',
@@ -25,7 +26,7 @@ export class PostCreateComponent implements OnInit {
         validators: [Validators.required, Validators.minLength(3)]
       }),
       content: new FormControl(null, { validators: [Validators.required] }),
-      image: new FormControl(null, {validators: [Validators.required]})
+      image: new FormControl(null, { validators: [Validators.required], asyncValidators: [mimeType] })
     })
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has("postId")) {
@@ -46,7 +47,7 @@ export class PostCreateComponent implements OnInit {
       }
     });
   }
-  
+
   onImagePicked(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
     this.form.patchValue({
@@ -70,7 +71,7 @@ export class PostCreateComponent implements OnInit {
     } else {
       this.postsService.updatePost(
         this.postId,
-       this.form.value.title,
+        this.form.value.title,
         this.form.value.content
       );
     }
