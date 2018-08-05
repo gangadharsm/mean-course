@@ -8,11 +8,13 @@ import { PostsService } from "../../../services/posts.service";
   templateUrl: './post-list.component.html',
   styleUrls: ['./post-list.component.css']
 })
+
 export class PostListComponent implements OnInit, OnDestroy {
 
   posts: Post[] = [];
+  isLoading = false;
   private postsSub: Subscription;
-  isLoading: boolean = false;
+
   constructor(public postsService: PostsService) { }
 
   ngOnInit() {
