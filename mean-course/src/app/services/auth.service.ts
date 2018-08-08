@@ -4,7 +4,7 @@ import { AuthData } from '../models/auth-data'
 @Injectable({
   providedIn: 'root'
 })
-export class AuthServiceService {
+export class AuthService {
 
   constructor(private http: HttpClient) { }
 
