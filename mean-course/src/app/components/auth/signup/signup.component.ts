@@ -26,5 +26,6 @@ export class SignupComponent implements OnInit {
       return;
     }
     console.log(this.signupForm.value)
+    this.authService.createUser(this.signupForm.value.email, this.signupForm.value.password);
   }
 }
