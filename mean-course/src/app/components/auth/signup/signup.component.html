@@ -1,15 +1,23 @@
 <mat-card>
-  <mat-spinner *ngIf="isLoading"></mat-spinner>
-  <form *ngIf="!isLoading">
-    <mat-form-field>
-      <input matInput type="email" placeholder="E-Mail">
-      <mat-error *ngIf="">Please enter a Valid Email .</mat-error>
-    </mat-form-field>
-
-    <mat-form-field>
-      <input matInput type="password" placeholder="Password">
-      <mat-error *ngIf="">Please enter a Password.</mat-error>
-    </mat-form-field>
-    <button mat-raised-button color="accent" type="submit">Signup</button>
-  </form>
-</mat-card>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+    <form [formGroup]="signupForm" (submit)="onSignup()" *ngIf="!isLoading">
+      <mat-form-field>
+        <input matInput type="email" formControlName="email" placeholder="E-Mail">
+        <mat-error *ngIf="signupForm.get('email').hasError('email') && !signupForm.get('email').hasError('required')">
+          Please enter a valid email address
+        </mat-error>
+        <mat-error *ngIf="signupForm.get('email').hasError('required')">
+          Email is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <input matInput type="password" formControlName="password" placeholder="Password">
+        <mat-error *ngIf="signupForm.get('password').invalid">
+          Password is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="accent" type="submit">Login</button>
+    </form>
+  </mat-card>
+  
