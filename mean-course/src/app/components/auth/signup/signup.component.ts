@@ -25,7 +25,7 @@ export class SignupComponent implements OnInit {
     if (this.signupForm.invalid) {
       return;
     }
-    console.log(this.signupForm.value)
+    this.isLoading = true;
     this.authService.createUser(this.signupForm.value.email, this.signupForm.value.password);
   }
 }
