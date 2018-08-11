@@ -1,39 +1,39 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { PostsService } from '../../../services/posts.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Post } from '../../../models/post';
-import { mimeType } from '../../../custom-validators/mine-type.validator';
-import { Subscription } from 'rxjs';
-import { AuthService } from '../../../services/auth.service';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { PostsService } from "../../../services/posts.service";
+import { ActivatedRoute, ParamMap } from "@angular/router";
+import { Post } from "../../../models/post";
+import { mimeType } from "../../../custom-validators/mine-type.validator";
+import { Subscription } from "rxjs";
+import { AuthService } from "../../../services/auth.service";
 @Component({
-  selector: 'app-post-create',
-  templateUrl: './post-create.component.html',
-  styleUrls: ['./post-create.component.css']
+  selector: "app-post-create",
+  templateUrl: "./post-create.component.html",
+  styleUrls: ["./post-create.component.css"]
 })
 export class PostCreateComponent implements OnInit, OnDestroy {
-  enteredTitle = '';
-  enteredContent = '';
+  enteredTitle = "";
+  enteredContent = "";
   post: Post;
   isLoading = false;
   form: FormGroup;
   imagePreview: string;
-  private mode = 'create';
+  private mode = "create";
   private postId: string;
   private authStatusSub: Subscription;
 
   constructor(
     public postsService: PostsService,
     public route: ActivatedRoute,
-    public authService: AuthService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
-      authStatus => {
+    this.authStatusSub = this.authService
+      .getAuthStatusListener()
+      .subscribe(authStatus => {
         this.isLoading = false;
-      }
-    );
+      });
     this.form = new FormGroup({
       title: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
@@ -45,9 +45,9 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       })
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if (paramMap.has('postId')) {
-        this.mode = 'edit';
-        this.postId = paramMap.get('postId');
+      if (paramMap.has("postId")) {
+        this.mode = "edit";
+        this.postId = paramMap.get("postId");
         this.isLoading = true;
         this.postsService.getPost(this.postId).subscribe(postData => {
           this.isLoading = false;
@@ -65,7 +65,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
           });
         });
       } else {
-        this.mode = 'create';
+        this.mode = "create";
         this.postId = null;
       }
     });
@@ -74,7 +74,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
   onImagePicked(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
     this.form.patchValue({ image: file });
-    this.form.get('image').updateValueAndValidity();
+    this.form.get("image").updateValueAndValidity();
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result;
@@ -87,7 +87,7 @@ export class PostCreateComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoading = true;
-    if (this.mode === 'create') {
+    if (this.mode === "create") {
       this.postsService.addPost(
         this.form.value.title,
         this.form.value.content,

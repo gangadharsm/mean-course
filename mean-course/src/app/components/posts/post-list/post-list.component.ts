@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { Post } from '../../../models/post';
 import { PostsService } from '../../../services/posts.service';
 import { AuthService } from '../../../services/auth.service';
+import { PageEvent } from '@angular/material';
 
 @Component({
   selector: 'app-post-list',
@@ -14,37 +15,58 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   posts: Post[] = [];
   isLoading = false;
-  private postsSub: Subscription;
+  totalPosts = 0;
+  postsPerPage = 2;
+  currentPage = 1;
+  pageSizeOptions = [1, 2, 5, 10];
   userIsAuthenticated = false;
-  private authListenerSubs: Subscription;
   userId: string;
-  constructor(public postsService: PostsService, private authService: AuthService) { }
+  private postsSub: Subscription;
+  private authStatusSub: Subscription;
+
+  constructor(
+    public postsService: PostsService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.isLoading = true;
-    this.postsService.getPosts();
+    this.postsService.getPosts(this.postsPerPage, this.currentPage);
     this.userId = this.authService.getUserId();
-    this.postsSub = this.postsService.getPostUpdateListener()
-      .subscribe((posts: Post[]) => {
+    this.postsSub = this.postsService
+      .getPostUpdateListener()
+      .subscribe((postData: { posts: Post[]; postCount: number }) => {
         this.isLoading = false;
-        this.posts = posts;
+        this.totalPosts = postData.postCount;
+        this.posts = postData.posts;
       });
-
-      this.userIsAuthenticated = this.authService.getIsAuth();
-
-      this.authListenerSubs = this.authService.getAuthStatusListener()
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authStatusSub = this.authService
+      .getAuthStatusListener()
       .subscribe(isAuthenticated => {
         this.userIsAuthenticated = isAuthenticated;
         this.userId = this.authService.getUserId();
       });
   }
 
+  onChangedPage(pageData: PageEvent) {
+    this.isLoading = true;
+    this.currentPage = pageData.pageIndex + 1;
+    this.postsPerPage = pageData.pageSize;
+    this.postsService.getPosts(this.postsPerPage, this.currentPage);
+  }
+
   onDelete(postId: string) {
-    this.postsService.deletePost(postId);
+    this.isLoading = true;
+    this.postsService.deletePost(postId).subscribe(() => {
+      this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    }, () => {
+      this.isLoading = false;
+    });
   }
 
   ngOnDestroy() {
     this.postsSub.unsubscribe();
-    this.authListenerSubs.unsubscribe();
+    this.authStatusSub.unsubscribe();
   }
 }
