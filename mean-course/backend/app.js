@@ -8,7 +8,7 @@ const userRoutes = require("./routes/user");
 const app = express();
 
 mongoose.connect(
-    "mongodb+srv://Gangadhara:r9vIW0INeJOpO8Ek@cluster0-wknnh.mongodb.net/node-angular", {
+    "mongodb+srv://Gangadhara:" + process.env.MONGO_ATLAS_PW + "@cluster0-wknnh.mongodb.net/node-angular", {
       useNewUrlParser: true
     }
   )
